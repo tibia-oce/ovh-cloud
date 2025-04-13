@@ -1,0 +1,7 @@
+---
+- name: Bootstrap security hardening on Debian servers
+  hosts: all
+  become: true
+  gather_facts: true
+  roles:
+  - security

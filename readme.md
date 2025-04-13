@@ -70,7 +70,3 @@ Edit the following files to customize your deployment:
 - `group_vars/all.yml` - Global variables
 - `group_vars/tibia_servers.yml` - Tibia-specific configuration
 - `inventory/hosts.yml` - Server inventory
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.

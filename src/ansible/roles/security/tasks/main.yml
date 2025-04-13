@@ -1,0 +1,21 @@
+---
+- name: Ensure the operating system is Debian
+  assert:
+    that:
+    - ansible_os_family == "Debian"
+    fail_msg: "This role is designed to be used on Debian systems only."
+
+- name: Include variables...
+  include_vars: main.yml
+
+# Fail2Ban
+- include_tasks: fail2ban.yml
+  when: security_fail2ban_enabled | bool
+
+# SSH Configuration
+- include_tasks: ssh.yml
+
+# Autoupdate Tasks
+- include_tasks: autoupdate.yml
+  when:
+  - security_autoupdate_enabled | bool

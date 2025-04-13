@@ -1,0 +1,5 @@
+# src\ansible\requirements.yml
+---
+- src: geerlingguy.security
+  version: ">=3.0.0"
+  name: security_harden
