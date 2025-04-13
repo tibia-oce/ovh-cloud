@@ -24,41 +24,6 @@ These playbooks automate the process of setting up a secure, well-configured Lin
 | `docker.yml` | Docker environment | Installs Docker Engine, Compose, and configures permissions |
 | `tibia.yml` | Tibia server stack | Deploys the complete Tibia server environment |
 
-## Features
-
-The playbooks handle the following aspects of server setup:
-
-### 1. Server Bootstrap (`bootstrap.yml`)
-- Secure SSH configuration (disable root login, password auth)
-- Create admin user with sudo privileges
-- Create deploy user (without sudo)
-- Set up SSH key authentication
-- Configure UFW firewall and fail2ban
-- Install basic system packages
-- Configure automatic security updates
-- Set up swap file (if needed for smaller instances)
-
-### 2. Docker Setup (`docker.yml`)
-- Install Docker Engine / Compose
-- Configure Docker daemon settings
-- Set up Docker user permissions
-
-### 3. Backup Configuration (`backup.yml`)
-- Set up database backup routines
-- Configure backup retention policies
-- Schedule automated backups
-
-### 4. Monitoring Stack (`monitoring.yml`)
-- Deploy monitoring tools (e.g., Prometheus, Grafana)
-- Configure basic alerts
-- Set up system metrics collection
-
-### 5. Network and SSL (`network.yml`)
-- Configure Traefik as reverse proxy
-- Set up SSL with Let's Encrypt via Certbot
-- Configure Cloudflare integration
-- Implement proper SSL termination
-
 ## Quick Start
 
 1. Clone this repository
