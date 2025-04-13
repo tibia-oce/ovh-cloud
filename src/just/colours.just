@@ -1,6 +1,3 @@
-# ========== COLOR HELPER FUNCTIONS ==========
-
-# Helper recipe for cross-platform black text
 _echo-black message:
     #!/usr/bin/env sh
     if [ -n "$COMSPEC" ] || [ -n "$POWERSHELL_VERSION" ]; then
@@ -9,7 +6,6 @@ _echo-black message:
         echo "\033[30m{{message}}\033[0m"
     fi
 
-# Helper recipe for cross-platform red text
 _echo-red message:
     #!/usr/bin/env sh
     if [ -n "$COMSPEC" ] || [ -n "$POWERSHELL_VERSION" ]; then
@@ -18,7 +14,6 @@ _echo-red message:
         echo "\033[31m{{message}}\033[0m"
     fi
 
-# Helper recipe for cross-platform green text
 _echo-green message:
     #!/usr/bin/env sh
     if [ -n "$COMSPEC" ] || [ -n "$POWERSHELL_VERSION" ]; then
@@ -27,7 +22,6 @@ _echo-green message:
         echo "\033[32m{{message}}\033[0m"
     fi
 
-# Helper recipe for cross-platform yellow text
 _echo-yellow message:
     #!/usr/bin/env sh
     if [ -n "$COMSPEC" ] || [ -n "$POWERSHELL_VERSION" ]; then
@@ -36,7 +30,6 @@ _echo-yellow message:
         echo "\033[33m{{message}}\033[0m"
     fi
 
-# Helper recipe for cross-platform blue text
 _echo-blue message:
     #!/usr/bin/env sh
     if [ -n "$COMSPEC" ] || [ -n "$POWERSHELL_VERSION" ]; then
@@ -45,7 +38,6 @@ _echo-blue message:
         echo "\033[34m{{message}}\033[0m"
     fi
 
-# Helper recipe for cross-platform magenta text
 _echo-magenta message:
     #!/usr/bin/env sh
     if [ -n "$COMSPEC" ] || [ -n "$POWERSHELL_VERSION" ]; then
@@ -54,7 +46,30 @@ _echo-magenta message:
         echo "\033[35m{{message}}\033[0m"
     fi
 
-# Helper recipe for cross-platform cyan text
 _echo-cyan message:
     #!/usr/bin/env sh
-    if [ -n "$COMSPEC" ] || [ -n "$POWERSHELL_VERSION" ];
+    if [ -n "$COMSPEC" ] || [ -n "$POWERSHELL_VERSION" ]; then
+        powershell -Command "Write-Host '{{message}}' -ForegroundColor Cyan"
+    else
+        echo "\033[36m{{message}}\033[0m"
+    fi
+
+_echo-white message:
+    #!/usr/bin/env sh
+    if [ -n "$COMSPEC" ] || [ -n "$POWERSHELL_VERSION" ]; then
+        powershell -Command "Write-Host '{{message}}' -ForegroundColor White"
+    else
+        echo "\033[37m{{message}}\033[0m"
+    fi
+
+_echo-success message:
+    @just _echo-green "✅ {{message}}"
+
+_echo-error message:
+    @just _echo-red "❌ {{message}}"
+
+_echo-warning message:
+    @just _echo-yellow "⚠️ {{message}}"
+
+_echo-info message:
+    @just _echo-cyan "ℹ️ {{message}}"

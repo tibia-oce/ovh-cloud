@@ -1,0 +1,16 @@
+---
+all:
+  hosts:
+    tibia_server:
+      ansible_host: xxx.xx.xx.xx
+      ansible_user: root
+
+      # Server configuration variables
+      admin_user: admin
+      deploy_user: deploy
+      ssh_allow_ports: [ 22 ]
+      timezone: UTC
+
+      # Application variables
+      tibia_port: 7171
+      login_port: 7172

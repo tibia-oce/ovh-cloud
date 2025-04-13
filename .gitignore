@@ -1,6 +1,6 @@
 # Ansible specific
 *.retry
-ansible.cfg
+# ansible.cfg
 .galaxy_install_info
 
 # Vault files

@@ -1,0 +1,8 @@
+version: '3'
+services:
+  ansible:
+    image: cytopia/ansible:latest
+    volumes:
+      - ./:/ansible
+      - ~/.ssh:/root/.ssh:ro
+    working_dir: /ansible
