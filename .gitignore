@@ -1,0 +1,80 @@
+# Ansible specific
+*.retry
+ansible.cfg
+.galaxy_install_info
+
+# Vault files
+*.vault
+*vault.yml
+*.vault.yml
+!vault-example.yml
+
+# SSH keys
+ssh_keys/*.pub
+ssh_keys/*.pem
+ssh_keys/id_*
+*.key
+
+# Inventory files with sensitive info
+inventory/host_vars/
+inventory/*.ini
+!inventory/example.ini
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+ENV/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Editor directories and files
+.idea
+.vscode
+*.swp
+*.swo
+
+# Docker
+docker-compose.override.yml
+
+# Generated content
+generated/
+temp/
+.tmp/
+
+# Local configuration
+.env
+*.local.yml
+config.local.yml
