@@ -1,89 +1,228 @@
-import 'src/just/colours.just'
+import 'src/scripts/colours.just'
 
+# ------------------------------------------------------
+# Default Command
+# ------------------------------------------------------
 default:
-    @just --list
+    @just help
 
+
+# ------------------------------------------------------
+# Help Command
+# ------------------------------------------------------
+help:
+    @just _echo-white "OVH Cloud Ansible CLI"
+    @echo
+    @just _echo-white "Usage:"
+    @echo "  just [COMMAND]"
+    @echo
+    @just _echo-yellow "Environment Setup Commands:"
+    @echo
+    @just _echo-magenta "  setup"
+    @just _echo-white "        Checks Docker, config, SSH keys directory (generates new key if empty),"
+    @just _echo-white "        and prompts for inventory details."
+    @echo
+    @just _echo-magenta "  generate-keys"
+    @just _echo-white "        Generates a new SSH key pair (private in ~/.ssh, public in src/ansible/keys)."
+    @echo
+    @just _echo-magenta "  prompt-inventory"
+    @just _echo-white "        Prompts the user for inventory details (hosts.yml)."
+    @echo
+    @just _echo-magenta "  docker-up"
+    @just _echo-white "        Starts the Ansible Docker container in the background."
+    @echo
+    @just _echo-magenta "  docker-down"
+    @just _echo-white "        Stops and removes the Ansible Docker container."
+    @echo
+    @just _echo-magenta "  docker-exec"
+    @just _echo-white "        Attaches to the running Ansible container's shell."
+    @echo
+    @just _echo-yellow "Playbook Commands:"
+    @echo
+    @just _echo-magenta "  run-playbook <file>"
+    @just _echo-white "        Runs an arbitrary Ansible playbook via Docker Compose."
+    @echo
+    @just _echo-magenta "  bootstrap"
+    @just _echo-white "        Applies the bootstrap.yml playbook (initial server hardening)."
+    @echo
+    @just _echo-magenta "  ping"
+    @just _echo-white "        Runs 'ansible all -m ping' to test connectivity to all inventory hosts."
+    @echo
+    @just _echo-magenta "  docker"
+    @just _echo-white "        Applies the docker.yml playbook (installs Docker on remote)."
+    @echo
+    @just _echo-magenta "  backup"
+    @just _echo-white "        Applies the backup.yml playbook (DB backups, schedules)."
+    @echo
+    @just _echo-magenta "  monitoring"
+    @just _echo-white "        Applies the monitoring.yml playbook (Prometheus, Grafana)."
+    @echo
+    @just _echo-magenta "  network"
+    @just _echo-white "        Applies the network.yml playbook (Traefik, SSL, Cloudflare)."
+    @echo
+    @just _echo-magenta "  tibia"
+    @just _echo-white "        Applies the tibia.yml playbook (Tibia server stack)."
+    @echo
+
+
+# ------------------------------------------------------
+# Setup
+# ------------------------------------------------------
 setup:
-    @just _echo-cyan "Setting up environment for OVH Ansible playbooks"
     @just check-docker
-    @just check-ssh-keys
-    @just check-configs
+    @echo
+    @just check-empty-inventory
+    @echo
+    @just check-empty-keys
+    @echo
     @just setup-common
-    @just _echo-success "Setup completed successfully!"
+    @echo
+    @just _echo-success "......"
 
+
+# ------------------------------------------------------
+# Check Docker
+# ------------------------------------------------------
 check-docker:
-    @just _echo-cyan "Checking for Docker..."
-    @which docker > /dev/null 2>&1 || (just _echo-error "Docker is not installed. Please install Docker first" && just _echo-info "Visit https://docs.docker.com/get-docker/" && exit 1)
-    @just _echo-success "Docker is installed"
+    @if command -v docker >/dev/null 2>&1; then \
+      just _echo-info "🐋 Docker is already installed; skipping installation."; \
+    else \
+      just _echo-error "❌ Docker is not installed. Please install Docker Desktop:"; \
+      just _echo-error "   https://www.docker.com/products/docker-desktop/"; \
+      exit 1; \
+    fi
 
-check-ssh-keys:
-    @just _echo-cyan "Checking for SSH keys..."
-    @if [ -f "$HOME/.ssh/id_rsa" ] || [ -f "$HOME/.ssh/id_ed25519" ]; then just _echo-success "SSH keys found"; else just _echo-warning "No SSH keys found"; just _echo-info "Run ssh-keygen -t ed25519 to generate an SSH key pair"; fi
-    
-    @just _echo-cyan "Setting up keys directory..."
-    @mkdir -p keys
-    
-    @if [ -f "$HOME/.ssh/id_rsa.pub" ] && [ ! -f "keys/id_rsa.pub" ]; then cp "$HOME/.ssh/id_rsa.pub" keys/ && just _echo-success "Copied RSA public key to keys/"; fi
-    
-    @if [ -f "$HOME/.ssh/id_ed25519.pub" ] && [ ! -f "keys/id_ed25519.pub" ]; then cp "$HOME/.ssh/id_ed25519.pub" keys/ && just _echo-success "Copied ED25519 public key to keys/"; fi
-    
-    @if [ ! -f "keys/id_rsa.pub" ] && [ ! -f "keys/id_ed25519.pub" ]; then just _echo-warning "No public keys found in keys/ directory"; just _echo-info "Add public keys to keys/ directory before deploying"; fi
-
+# ------------------------------------------------------
+# Check Configs
+# ------------------------------------------------------
 check-configs:
-    @just _echo-cyan "Checking configuration files..."
-    @mkdir -p inventory
+    @mkdir -p src/ansible/inventory
+    @mkdir -p src/ansible/keys
 
-    @if [ ! -f ".env" ] && [ -f ".env.example" ]; then cp ".env.example" ".env" && just _echo-success "Created .env file from example. Please edit it with your settings"; elif [ ! -f ".env" ]; then touch ".env" && just _echo-warning "Created empty .env file. You'll need to add your settings"; fi
-    
-    @if [ ! -f "inventory/hosts.yml" ] && [ -f "inventory/hosts.example.yml" ]; then cp "inventory/hosts.example.yml" "inventory/hosts.yml" && just _echo-success "Created inventory/hosts.yml from example. Please edit it with your server details"; elif [ ! -f "inventory/hosts.yml" ]; then just _create-basic-inventory && just _echo-warning "Created basic inventory/hosts.yml. Please edit it with your server details"; fi
-    
-    @if [ ! -f "ansible.cfg" ]; then just _create-ansible-cfg && just _echo-success "Created ansible.cfg file with standard settings"; fi
+    @if [ ! -f ".env" ] && [ -f ".env.example" ]; then \
+      cp ".env.example" ".env" && \
+      just _echo-success "Created .env from example. Please edit it with your settings."; \
+    elif [ ! -f ".env" ]; then \
+      touch ".env" && \
+      just _echo-warning "Created an empty .env. Please fill it in."; \
+    fi
+
+    @if [ ! -f "src/ansible/inventory/hosts.yml" ] && [ -f "src/ansible/inventory/hosts.example.yml" ]; then \
+      cp "src/ansible/inventory/hosts.example.yml" "src/ansible/inventory/hosts.yml" && \
+      just _echo-success "Created hosts.yml from example."; \
+    elif [ ! -f "src/ansible/inventory/hosts.yml" ]; then \
+      just _create-basic-inventory && \
+      just _echo-warning "Created a basic hosts.yml. (Will be overwritten if you run prompt-inventory)"; \
+    fi
+
+    @if [ ! -f "src/ansible/ansible.cfg" ]; then \
+      just _create-ansible-cfg && \
+      just _echo-success "Created ansible.cfg with standard settings."; \
+    fi
 
 _create-basic-inventory:
-    @echo "# OVH Server Inventory" > inventory/hosts.yml
-    @echo "all:" >> inventory/hosts.yml
-    @echo "  hosts:" >> inventory/hosts.yml
-    @echo "    your_server:" >> inventory/hosts.yml
-    @echo "      ansible_host: your_server_ip" >> inventory/hosts.yml
-    @echo "      ansible_user: root" >> inventory/hosts.yml
+    @echo "---" > src/ansible/inventory/hosts.yml
+    @echo "all:" >> src/ansible/inventory/hosts.yml
+    @echo "  hosts:" >> src/ansible/inventory/hosts.yml
+    @echo "    your_server:" >> src/ansible/inventory/hosts.yml
+    @echo "      ansible_host: your_server_ip" >> src/ansible/inventory/hosts.yml
+    @echo "      ansible_user: root" >> src/ansible/inventory/hosts.yml
 
 _create-ansible-cfg:
-    @echo "[defaults]" > ansible.cfg
-    @echo "inventory = inventory/hosts.yml" >> ansible.cfg
-    @echo "host_key_checking = False" >> ansible.cfg
-    @echo "retry_files_enabled = False" >> ansible.cfg
-    @echo "roles_path = roles" >> ansible.cfg
+    @echo "[defaults]" > src/ansible/ansible.cfg
+    @echo "inventory = src/ansible/inventory/hosts.yml" >> src/ansible/ansible.cfg
+    @echo "host_key_checking = False" >> src/ansible/ansible.cfg
+    @echo "retry_files_enabled = False" >> src/ansible/ansible.cfg
+    @echo "roles_path = src/ansible/roles" >> src/ansible/ansible.cfg
 
+
+# ------------------------------------------------------
+# Prompt Inventory
+# ------------------------------------------------------
+prompt-inventory:
+    @just _echo-cyan "📄 Prompting for inventory (hosts.yml)..."
+    @bash src/scripts/inventory.sh
+
+check-empty-inventory:
+    @if [ ! -f src/ansible/inventory/hosts.yml ]; then \
+      just _echo-warning "No inventory file found at src/ansible/inventory/hosts.yml. Creating a new one..."; \
+      just prompt-inventory; \
+    else \
+      just _echo-info "📄 Inventory file already exists; skipping creation."; \
+    fi
+
+# ------------------------------------------------------
+# Check if Keys Directory is Empty
+# ------------------------------------------------------
+check-empty-keys:
+    @if [ -z "$$(ls -A src/ansible/keys 2>/dev/null)" ]; then \
+      just _echo-warning "No SSH public keys found in src/ansible/keys. Generating a new key pair..."; \
+      just generate-keys; \
+    else \
+      just _echo-info "🔑 Keys directory is not empty; skipping key generation."; \
+    fi
+
+
+# ------------------------------------------------------
+# Generate Keys
+# ------------------------------------------------------
+generate-keys:
+    @just _echo-cyan "🔑 === Running generate-keys ==="
+    @bash src/scripts/generate-keys.sh
+
+
+# ------------------------------------------------------
+# Setup Common
+# ------------------------------------------------------
 setup-common:
-    @just _echo-cyan "Running common setup tasks..."
-    @just _echo-cyan "Pulling the Ansible Docker image..."
-    @docker pull cytopia/ansible
-    
-    @just _echo-info "Next steps:"
-    @just _echo-info "1. Edit .env with your settings"
-    @just _echo-info "2. Edit inventory/hosts.yml with your server details" 
-    @just _echo-info "3. Run 'just bootstrap' to set up your first server"
+    @just _echo-cyan "📦 Pulling latest ansible image..."
+    @docker pull cytopia/ansible:2.13
 
+
+# ------------------------------------------------------
+# Docker Compose Helpers
+# ------------------------------------------------------
+docker-up:
+    @just _echo-cyan "🐳 Starting the Ansible container in background..."
+    @docker-compose -f src/docker/docker-compose.yaml up -d ansible
+    @just _echo-success "Ansible container is running."
+
+docker-down:
+    @just _echo-cyan "🛑 Stopping and removing containers..."
+    @docker-compose -f src/docker/docker-compose.yaml down
+    @just _echo-success "Containers stopped."
+
+docker-exec:
+    @just _echo-cyan "💻 Attaching to the Ansible container..."
+    @docker-compose -f src/docker/docker-compose.yaml exec ansible bash
+
+
+# ------------------------------------------------------
+# Ansible: Running Playbooks
+# ------------------------------------------------------
 run-playbook playbook:
-    @just _echo-yellow "[NOT YET IMPLEMENTED] Running playbook {{playbook}}"
+    @just _echo-cyan "🛠 Running playbook {{playbook}}..."
+    @docker-compose -f src/docker/docker-compose.yaml run --rm ansible \
+      ansible-playbook "{{playbook}}"
 
 bootstrap:
-    @just _echo-yellow "[NOT YET IMPLEMENTED] Bootstrapping server"
+    @just run-playbook src/ansible/bootstrap.yml
 
 ping:
-    @just _echo-yellow "[NOT YET IMPLEMENTED] Pinging all hosts"
+    @docker-compose -f src/docker/docker-compose.yaml run --rm ansible \
+      ansible all -m ping
 
 docker:
-    @just _echo-yellow "[NOT YET IMPLEMENTED] Setting up Docker engine"
+    @just run-playbook src/ansible/docker.yml
 
 backup:
-    @just _echo-yellow "[NOT YET IMPLEMENTED] Setting up backups"
+    @just run-playbook src/ansible/backup.yml
 
 monitoring:
-    @just _echo-yellow "[NOT YET IMPLEMENTED] Setting up monitoring"
+    @just run-playbook src/ansible/monitoring.yml
 
 network:
-    @just _echo-yellow "[NOT YET IMPLEMENTED] Setting up networking"
+    @just run-playbook src/ansible/network.yml
 
 tibia:
-    @just _echo-yellow "[NOT YET IMPLEMENTED] Deploying Tibia server stack"
+    @just run-playbook src/ansible/tibia.yml

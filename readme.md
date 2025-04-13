@@ -4,10 +4,10 @@ This repository contains Ansible playbooks for setting up and managing OVH cloud
 
 ## Requirements
 
-- Docker (for cross-platform usage)
+- Git
+- Bash terminal (git bash works fine for windows)
+- Docker (for cross-platform usage of ansible)
 - Just command runner (`brew install just`, `choco install just`, etc.)
-- SSH keys for authentication
-
 
 ## Overview
 
@@ -32,7 +32,7 @@ These playbooks automate the process of setting up a secure, well-configured Lin
    cd ovh
    ```
 
-2. Add your SSH public keys to the `ssh_keys/` directory
+2. Add your SSH public keys to the `src/ansible/keys` directory
 
 3. Configure your inventory in `inventory/hosts.yml`
 
