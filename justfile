@@ -77,8 +77,17 @@ setup:
     @echo
     @just setup-common
     @echo
-    @just _echo-success "......"
+    @bash src/scripts/add-known-host.sh
+    @echo
+    @just first-login
+    @echo
+    @just _echo-info "Setup completed successfully..."
+    @just _echo-success "Try running 'just ping' to test access to the server."
+    @just _echo-success "Then run 'just help' for a list of available playbooks."
 
+first-login:
+    @bash src/scripts/first-login.sh
+    @just _echo-warning "If you are changing your password for the first time, update the 'ansible_user_password' variable in the src/ansible/inventory/hosts.yml file."
 
 # ------------------------------------------------------
 # Check Docker
@@ -155,21 +164,12 @@ check-empty-inventory:
 # Check if Keys Directory is Empty
 # ------------------------------------------------------
 check-empty-keys:
-    @if [ -z "$$(ls -A src/ansible/keys 2>/dev/null)" ]; then \
-      just _echo-warning "No SSH public keys found in src/ansible/keys. Generating a new key pair..."; \
-      just generate-keys; \
+    @if find src/ansible/keys -maxdepth 1 -type f -name '*.pub' -print -quit | grep -q .; then \
+      just _echo-info "🔑 SSH public key(s) already exist in src/ansible/keys."; \
     else \
-      just _echo-info "🔑 Keys directory is not empty; skipping key generation."; \
+      just _echo-warning "No SSH public keys (*.pub) found in src/ansible/keys."; \
+      bash src/scripts/select-or-generate-key.sh; \
     fi
-
-
-# ------------------------------------------------------
-# Generate Keys
-# ------------------------------------------------------
-generate-keys:
-    @just _echo-cyan "🔑 === Running generate-keys ==="
-    @bash src/scripts/generate-keys.sh
-
 
 # ------------------------------------------------------
 # Setup Common

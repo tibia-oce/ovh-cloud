@@ -28,17 +28,18 @@ These playbooks automate the process of setting up a secure, well-configured Lin
 
 1. Clone this repository
    ```
-   git clone https://github.com/yourusername/ovh.git
-   cd ovh
+   git clone https://github.com/tibia-oce/ovh-cloud.git
+   cd ovh-cloud
    ```
 
-2. Add your SSH public keys to the `src/ansible/keys` directory
-
-3. Configure your inventory in `inventory/hosts.yml`
-
-4. Run the bootstrap playbook:
+2. Run the bootstrap playbook:
    ```
-   just run-playbook bootstrap.yml
+   just setup
+   ```
+
+2. Run the bootstrap playbook:
+   ```
+   just bootstrap
    ```
 
 ## Usage

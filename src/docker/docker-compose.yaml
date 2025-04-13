@@ -1,13 +1,9 @@
 services:
   ansible:
     image: cytopia/ansible:2.13
-    # Mount the entire repo so Ansible sees everything in /ansible
     volumes:
-      - ./:/ansible
-      # Mount the local ~/.ssh directory for read-only access so the container
-      # can use host private keys to connect to servers
+      - ../ansible:/ansible
       - ~/.ssh:/root/.ssh:ro
     working_dir: /ansible
-    # Set environment variables to ensure Ansible picks up your config
     environment:
-      ANSIBLE_CONFIG: /ansible/src/ansible/ansible.cfg
+      ANSIBLE_CONFIG: /ansible/ansible.cfg
