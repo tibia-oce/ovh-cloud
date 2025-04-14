@@ -9,7 +9,7 @@ This role provides the installation and configuration of Docker on Debian-based 
 
 ## Role Variables
 
-The role uses a variety of variables to customize its behavior. Key variables include:
+The role uses a variety of variables to customise its behavior. Key variables include:
 
 - **docker_edition**  
   The edition of Docker to install (e.g., `ce` for Community Edition).

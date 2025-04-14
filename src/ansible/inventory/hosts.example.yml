@@ -1,9 +1,0 @@
----
-all:
-  hosts:
-    tibia_server:
-      vps_name: xxxx
-      ansible_host: xxxx
-      ansible_user: xxxx
-      ansible_password: xxxx
-      deploy_user: deploy
