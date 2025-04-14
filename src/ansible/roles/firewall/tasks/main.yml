@@ -1,0 +1,53 @@
+---
+- name: Ensure the operating system is Debian
+  assert:
+    that:
+    - ansible_os_family == "Debian"
+    fail_msg: "This role is designed to be used on Debian-based systems only."
+
+- name: Ensure iptables is present.
+  ansible.builtin.package:
+    name: iptables
+    state: present
+
+- name: Flush iptables the first time playbook runs.
+  ansible.builtin.command: >
+    iptables -F
+  args:
+    creates: /etc/firewall.bash
+
+- name: Copy firewall script into place.
+  ansible.builtin.template:
+    src: "{{ firewall_template }}"
+    dest: /etc/firewall.bash
+    owner: root
+    group: root
+    mode: 744
+  notify: restart firewall
+
+- name: Copy firewall init script into place.
+  ansible.builtin.template:
+    src: firewall.init.j2
+    dest: /etc/init.d/firewall
+    owner: root
+    group: root
+    mode: 755
+  when: ansible_service_mgr != 'systemd'
+
+- name: Copy firewall systemd unit file into place (for systemd systems).
+  ansible.builtin.template:
+    src: firewall.unit.j2
+    dest: /etc/systemd/system/firewall.service
+    owner: root
+    group: root
+    mode: 644
+  when: ansible_service_mgr == 'systemd'
+
+- name: Configure the firewall service.
+  ansible.builtin.service:
+    name: firewall
+    state: "{{ firewall_state }}"
+    enabled: "{{ firewall_enabled_at_boot }}"
+
+- import_tasks: disable.yml
+  when: firewall_disable_ufw | bool

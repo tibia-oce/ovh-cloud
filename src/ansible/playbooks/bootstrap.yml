@@ -1,7 +1,8 @@
 ---
-- name: Bootstrap security hardening on Debian servers
+- name: Bootstrap security hardening and firewall configuration on Debian servers
   hosts: all
   become: true
   gather_facts: true
   roles:
   - security
+  - firewall

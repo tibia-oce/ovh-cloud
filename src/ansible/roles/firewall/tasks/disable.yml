@@ -1,0 +1,20 @@
+---
+- name: Check if ufw package is installed (on Debian/Ubuntu).
+  command: service ufw status
+  register: ufw_installed
+  ignore_errors: true
+  changed_when: false
+  when:
+  - ansible_os_family == "Debian"
+  - firewall_disable_ufw | bool
+  check_mode: false
+
+- name: Disable the ufw firewall (on Debian/Ubuntu, if configured).
+  ansible.builtin.service:
+    name: ufw
+    state: stopped
+    enabled: false
+  when:
+  - ansible_os_family == "Debian"
+  - firewall_disable_ufw | bool
+  - ufw_installed.rc == 0
