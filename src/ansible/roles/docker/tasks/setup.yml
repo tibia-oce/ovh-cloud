@@ -1,0 +1,62 @@
+---
+- name: Ensure apt key is not present in trusted.gpg.d
+  ansible.builtin.file:
+    path: /etc/apt/trusted.gpg.d/docker.asc
+    state: absent
+
+- name: Ensure old apt source list is not present in /etc/apt/sources.list.d
+  ansible.builtin.file:
+    path: "/etc/apt/sources.list.d/download_docker_com_linux_{{ docker_apt_ansible_distribution | lower }}.list"
+    state: absent
+
+- name: Ensure the repo referencing the old key is not present
+  apt_repository:
+    repo: "deb [arch={{ docker_apt_arch }} signed-by=/etc/apt/keyrings/docker.gpg] {{ docker_repo_url }}/{{ docker_apt_ansible_distribution | lower }} {{ ansible_distribution_release }} {{ docker_apt_release_channel }}"
+    state: absent
+    filename: "{{ docker_apt_filename }}"
+    update_cache: yes
+  when: docker_add_repo | bool
+
+- name: Ensure old versions of Docker are not installed.
+  package:
+    name: "{{ docker_obsolete_packages }}"
+    state: absent
+
+- name: Ensure dependencies are installed.
+  apt:
+    name:
+    - apt-transport-https
+    - ca-certificates
+    - curl
+    - gnupg2
+    - lsb-release
+    state: present
+  when: docker_add_repo | bool
+
+- name: Ensure directory exists for /etc/apt/keyrings
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: "0755"
+
+- name: Add Docker apt key using curl and gpg (dearmor)
+  shell: |
+    mkdir -p /etc/apt/keyrings
+    curl -fsSL {{ docker_apt_gpg_key }} | gpg --dearmor --yes -o /etc/apt/keyrings/docker.gpg
+    chmod a+r /etc/apt/keyrings/docker.gpg
+  args:
+    warn: false
+  when: docker_add_repo | bool
+
+- name: Ensure Docker repository is present.
+  apt_repository:
+    repo: "{{ docker_apt_repository | replace('signed-by=/etc/apt/keyrings/docker.asc', 'signed-by=/etc/apt/keyrings/docker.gpg') }}"
+    state: present
+    filename: "{{ docker_apt_filename }}"
+    update_cache: yes
+  when: docker_add_repo | bool
+
+- name: Update apt cache after adding Docker repository.
+  apt:
+    update_cache: yes
+  when: docker_add_repo | bool
