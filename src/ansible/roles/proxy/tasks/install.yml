@@ -111,10 +111,10 @@
       source: "{{ traefik_ssl_dir_path }}"
       target: /ssl
       read_only: false
-    # todo(traefik): bind to other backend services
-    # - type: bind
-    #   source: "/var/run/docker.sock"
-    #   target: "/var/run/docker.sock"
+    - type: bind
+      source: "{{ traefik_config_providers_docker_endpoint | regex_replace('^unix://', '') }}"
+      target: "{{ traefik_config_providers_docker_endpoint | regex_replace('^unix://', '') }}"
+      read_only: true
     command: "--configFile=/config/traefik.yml {{ traefik_process_extra_arguments | join(' ') }}"
   when: traefik_enabled | bool
 

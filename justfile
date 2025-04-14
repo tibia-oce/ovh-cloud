@@ -101,49 +101,6 @@ check-docker:
       exit 1; \
     fi
 
-# ------------------------------------------------------
-# Check Configs
-# ------------------------------------------------------
-check-configs:
-    @mkdir -p src/ansible/inventory
-    @mkdir -p src/ansible/keys
-
-    @if [ ! -f ".env" ] && [ -f ".env.example" ]; then \
-      cp ".env.example" ".env" && \
-      just _echo-success "Created .env from example. Please edit it with your settings."; \
-    elif [ ! -f ".env" ]; then \
-      touch ".env" && \
-      just _echo-warning "Created an empty .env. Please fill it in."; \
-    fi
-
-    @if [ ! -f "src/ansible/inventory/hosts.yml" ] && [ -f "src/ansible/inventory/hosts.example.yml" ]; then \
-      cp "src/ansible/inventory/hosts.example.yml" "src/ansible/inventory/hosts.yml" && \
-      just _echo-success "Created hosts.yml from example."; \
-    elif [ ! -f "src/ansible/inventory/hosts.yml" ]; then \
-      just _create-basic-inventory && \
-      just _echo-warning "Created a basic hosts.yml. (Will be overwritten if you run prompt-inventory)"; \
-    fi
-
-    @if [ ! -f "src/ansible/ansible.cfg" ]; then \
-      just _create-ansible-cfg && \
-      just _echo-success "Created ansible.cfg with standard settings."; \
-    fi
-
-_create-basic-inventory:
-    @echo "---" > src/ansible/inventory/hosts.yml
-    @echo "all:" >> src/ansible/inventory/hosts.yml
-    @echo "  hosts:" >> src/ansible/inventory/hosts.yml
-    @echo "    your_server:" >> src/ansible/inventory/hosts.yml
-    @echo "      ansible_host: your_server_ip" >> src/ansible/inventory/hosts.yml
-    @echo "      ansible_user: root" >> src/ansible/inventory/hosts.yml
-
-_create-ansible-cfg:
-    @echo "[defaults]" > src/ansible/ansible.cfg
-    @echo "inventory = src/ansible/inventory/hosts.yml" >> src/ansible/ansible.cfg
-    @echo "host_key_checking = False" >> src/ansible/ansible.cfg
-    @echo "retry_files_enabled = False" >> src/ansible/ansible.cfg
-    @echo "roles_path = src/ansible/roles" >> src/ansible/ansible.cfg
-
 
 # ------------------------------------------------------
 # Prompt Inventory
@@ -159,6 +116,7 @@ check-empty-inventory:
     else \
       just _echo-info "📄 Inventory file already exists; skipping creation."; \
     fi
+
 
 # ------------------------------------------------------
 # Check if Keys Directory is Empty
