@@ -1,0 +1,28 @@
+[Unit]
+Description=Traefik ({{ traefik_identifier }})
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Restart=always
+RestartSec=10
+ExecStartPre=/usr/bin/docker stop {{ traefik_identifier }} || true
+ExecStartPre=/usr/bin/docker rm {{ traefik_identifier }} || true
+ExecStart=/usr/bin/docker run --name {{ traefik_identifier }} \
+  --network {{ traefik_container_network }} \
+  -p {{ traefik_container_web_host_bind_port }}:{{ traefik_config_entrypoint_web_port_in_container }} \
+  -p {{ traefik_container_web_secure_host_bind_port }}:{{ traefik_config_entrypoint_web_secure_port_in_container }} \
+  {% if traefik_container_web_secure_host_bind_port_udp != '' %}
+  -p {{ traefik_container_web_secure_host_bind_port_udp }}:{{ traefik_config_entrypoint_web_secure_port_in_container }}/udp \
+  {% endif %}
+  -v {{ traefik_config_dir_path }}:/config:ro \
+  {% if traefik_ssl_dir_enabled %}
+  -v {{ traefik_ssl_dir_path }}:/ssl \
+  {% endif %}
+  {{ traefik_container_extra_arguments | join(" ") }} \
+  {{ traefik_container_image }} --configFile=/config/traefik.yml {{ traefik_process_extra_arguments | join(" ") }}
+ExecStop=/usr/bin/docker stop {{ traefik_identifier }}
+ExecStopPost=/usr/bin/docker rm {{ traefik_identifier }}
+
+[Install]
+WantedBy=multi-user.target

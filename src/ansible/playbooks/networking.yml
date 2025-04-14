@@ -1,0 +1,14 @@
+---
+- name: Sets up networking with Docker and Traefik
+  hosts: all
+  become: true
+  gather_facts: true
+
+  vars:
+    pip_install_packages:
+    - name: docker
+
+  roles:
+  - pip
+  - docker
+  - proxy

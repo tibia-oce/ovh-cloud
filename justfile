@@ -212,8 +212,8 @@ ping:
     @docker-compose -f src/docker/docker-compose.yaml run --rm ansible \
       ansible all -m ping
 
-docker:
-    @just run-playbook playbooks/docker.yml
+networking:
+    @just run-playbook playbooks/networking.yml
 
 backup:
     @just run-playbook playbooks/backup.yml
