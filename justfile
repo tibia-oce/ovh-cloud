@@ -206,23 +206,23 @@ run-playbook playbook:
       ansible-playbook "{{playbook}}"
 
 bootstrap:
-    @just run-playbook src/ansible/bootstrap.yml
+    @just run-playbook playbooks/bootstrap.yml
 
 ping:
     @docker-compose -f src/docker/docker-compose.yaml run --rm ansible \
       ansible all -m ping
 
 docker:
-    @just run-playbook src/ansible/docker.yml
+    @just run-playbook playbooks/docker.yml
 
 backup:
-    @just run-playbook src/ansible/backup.yml
+    @just run-playbook playbooks/backup.yml
 
 monitoring:
-    @just run-playbook src/ansible/monitoring.yml
+    @just run-playbook playbooks/monitoring.yml
 
 network:
-    @just run-playbook src/ansible/network.yml
+    @just run-playbook playbooks/network.yml
 
 tibia:
-    @just run-playbook src/ansible/tibia.yml
+    @just run-playbook playbooks/tibia.yml
