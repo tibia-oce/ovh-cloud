@@ -64,6 +64,7 @@ docker_yum_gpg_key: "{{ docker_repo_url }}/{{ (ansible_distribution == 'Fedora')
 # A list of users who will be added to the docker group.
 docker_users:
 - "{{ deploy_user }}"
+- "{{ ansible_user }}"
 
 # Docker daemon options as a dict
 docker_daemon_options: {}

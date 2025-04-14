@@ -11,27 +11,27 @@
     line: "{{ item.line }}"
     state: present
     validate: 'sshd -T -f %s'
-    mode: 0644
+    mode: 644
   with_items:
-    - regexp: "^PasswordAuthentication"
-      line: "PasswordAuthentication {{ security_ssh_password_authentication }}"
-    - regexp: "^PermitRootLogin"
-      line: "PermitRootLogin {{ security_ssh_permit_root_login }}"
-    - regexp: "^Port"
-      line: "Port {{ security_ssh_port }}"
-    - regexp: "^UseDNS"
-      line: "UseDNS {{ security_ssh_usedns }}"
-    - regexp: "^PermitEmptyPasswords"
-      line: "PermitEmptyPasswords {{ security_ssh_permit_empty_password }}"
-    - regexp: "^ChallengeResponseAuthentication"
-      line: "ChallengeResponseAuthentication {{ security_ssh_challenge_response_auth }}"
-    - regexp: "^GSSAPIAuthentication"
-      line: "GSSAPIAuthentication {{ security_ssh_gss_api_authentication }}"
-    - regexp: "^X11Forwarding"
-      line: "X11Forwarding {{ security_ssh_x11_forwarding }}"
+  - regexp: "^PasswordAuthentication"
+    line: "PasswordAuthentication {{ security_ssh_password_authentication }}"
+  - regexp: "^PermitRootLogin"
+    line: "PermitRootLogin {{ security_ssh_permit_root_login }}"
+  - regexp: "^Port"
+    line: "Port {{ security_ssh_port }}"
+  - regexp: "^UseDNS"
+    line: "UseDNS {{ security_ssh_usedns }}"
+  - regexp: "^PermitEmptyPasswords"
+    line: "PermitEmptyPasswords {{ security_ssh_permit_empty_password }}"
+  - regexp: "^ChallengeResponseAuthentication"
+    line: "ChallengeResponseAuthentication {{ security_ssh_challenge_response_auth }}"
+  - regexp: "^GSSAPIAuthentication"
+    line: "GSSAPIAuthentication {{ security_ssh_gss_api_authentication }}"
+  - regexp: "^X11Forwarding"
+    line: "X11Forwarding {{ security_ssh_x11_forwarding }}"
   notify:
-    - reload systemd
-    - restart ssh
+  - reload systemd
+  - restart ssh
 
 - name: Add configured users allowed to connect over ssh
   lineinfile:
@@ -41,7 +41,7 @@
     state: present
     create: true
     validate: 'sshd -T -f %s'
-    mode: 0644
+    mode: 644
   when: security_ssh_allowed_users | length > 0
   notify: restart ssh
 
@@ -53,7 +53,7 @@
     state: present
     create: true
     validate: 'sshd -T -f %s'
-    mode: 0644
+    mode: 644
   when: security_ssh_allowed_groups | length > 0
   notify: restart ssh
 
@@ -64,7 +64,7 @@
     line: '{{ item }} ALL=(ALL) NOPASSWD: ALL'
     state: present
     validate: 'visudo -cf %s'
-    mode: 0440
+    mode: 440
   with_items: "{{ security_sudoers_passwordless }}"
   when: security_sudoers_passwordless | length > 0
 
@@ -75,6 +75,6 @@
     line: '{{ item }} ALL=(ALL) ALL'
     state: present
     validate: 'visudo -cf %s'
-    mode: 0440
+    mode: 440
   with_items: "{{ security_sudoers_passworded }}"
   when: security_sudoers_passworded | length > 0
