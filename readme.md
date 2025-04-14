@@ -2,16 +2,18 @@
 
 This repository contains Ansible playbooks for setting up and managing OVH cloud servers from initial provision to a 'operational-ready' state for hosting Tibia servers and related services.
 
+Ansible is idempotent. This means you can run it over and over again to keep your servers configured.  Let's say, in a week, you disable ufw. If you run this script again, it will turn ufw back on. The ansible concept is that it maintains a **solid state of your server**, even if you run it multiple times. 
+
 ## Requirements
 
 - Git
 - Bash terminal (git bash works fine for windows)
 - Docker (for cross-platform usage of ansible)
-- Just command runner (`brew install just`, `choco install just`, etc.)
+- Just command runner (`brew install just`, `winget install --id Casey.Just --exact` etc.)
 
 ## Overview
 
-These playbooks automate the process of setting up a secure, well-configured Linux environment on a fresh OVH server. The goal is to provide a consistent, repeatable, and secure foundation for hosting Tibia server stacks with databases, proxies, and web interfaces.
+These playbooks automate the process of setting up a secure, well-configured Linux environment on a fresh VPS. The goal is to provide a consistent, repeatable, and secure foundation for hosting Tibia server stacks with databases, proxies, and web interfaces.
 
 ## Playbooks
 
@@ -52,20 +54,9 @@ The repository includes a `justfile` with commands for common operations:
 - `just bootstrap` - Run the initial server setup
 - `just setup-tibia` - Set up the complete Tibia server stack
 
-## Playbook Execution Order
-
-For a fresh server, run the playbooks in this order:
-
-1. `bootstrap.yml` - Basic server setup and security
-2. `docker.yml` - Set up Docker environment
-3. `network.yml` - Configure networking and SSL
-4. `monitoring.yml` - Set up monitoring
-5. `backup.yml` - Configure backups
-6. `tibia.yml` - Deploy the Tibia server stack
-
 ## Configuration
 
-Edit the following files to customize your deployment:
+After running the `just setup` script, you can edit the following files to customise your deployment:
 
 - `group_vars/all.yml` - Global variables
 - `group_vars/tibia_servers.yml` - Tibia-specific configuration
