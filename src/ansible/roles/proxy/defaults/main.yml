@@ -81,9 +81,9 @@ traefik_config_certificatesResolvers_acme_httpChallenge_entrypoint: "{{ traefik_
 # For more information on supported providers, settings and environment variables, please refer to:
 # https://doc.traefik.io/traefik/https/acme/#providers
 # If enabled, Traefik will use DNS challenges to obtain Let's Encrypt certificates.
-traefik_config_certificatesResolvers_acme_dnsChallenge_enabled: false
+traefik_config_certificatesResolvers_acme_dnsChallenge_enabled: true
 # Specify the DNS provider to handle DNS challenges.
-traefik_config_certificatesResolvers_acme_dnsChallenge_provider: ""
+traefik_config_certificatesResolvers_acme_dnsChallenge_provider: "cloudflare"
 # The delay in seconds before checking DNS propagation for the ACME DNS challenge.
 traefik_config_certificatesResolvers_acme_dnsChallenge_delayBeforeCheck: ''
 # The list of DNS resolvers to be used for the ACME DNS challenge.

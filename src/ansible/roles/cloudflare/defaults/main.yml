@@ -1,12 +1,12 @@
 ---
-# Record type for the Traefik dashboard (A record)
+# DNS record type for the Traefik dashboard (A record)
 traefik_dns_record_type: "A"
 
-# Record name used in the Cloudflare zone (creates "traefik.{{ cloudflare_domain }}")
+# Record name for the subdomain – this creates traefik.{{ cloudflare_domain }}
 traefik_dns_record: "traefik"
 
 # TTL for the DNS record (1 means automatic)
 traefik_dns_ttl: 1
 
-# Whether the DNS record should be proxied through Cloudflare's network
+# Enable the Cloudflare proxy so that the subdomain is served through the Cloudflare network (orange cloud)
 traefik_dns_proxied: true
