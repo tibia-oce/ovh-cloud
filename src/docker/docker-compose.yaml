@@ -1,6 +1,9 @@
 services:
   ansible:
-    image: cytopia/ansible:2.13
+    container_name: ansible
+    build:
+      context: ..
+      dockerfile: ./docker/Dockerfile
     volumes:
       - ../ansible:/ansible
       - ~/.ssh:/root/.ssh:ro

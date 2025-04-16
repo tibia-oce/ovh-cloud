@@ -1,5 +1,5 @@
 ---
-- name: Sets up networking with Docker and Traefik
+- name: Sets up networking with Docker, Traefik and Cloudflare
   hosts: all
   become: true
   gather_facts: true
@@ -7,8 +7,10 @@
   vars:
     pip_install_packages:
     - name: docker
+    - name: passlib
 
   roles:
   - pip
   - docker
+  - cloudflare
   - proxy

@@ -79,3 +79,4 @@ temp/
 *.local.yml
 config.local.yml
 *.txt
+!requirements.txt

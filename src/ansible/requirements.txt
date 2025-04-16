@@ -1,0 +1,5 @@
+passlib
+requests
+urllib3
+pyOpenSSL
+cryptography

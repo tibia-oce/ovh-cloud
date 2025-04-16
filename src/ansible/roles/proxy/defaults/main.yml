@@ -253,11 +253,11 @@ traefik_config_http_middlewares_compression_middleware_options_custom: {}
 
 # traefik_dashboard_enabled controls whether the Dashboard is enabled.
 # See: https://doc.traefik.io/traefik/operations/dashboard/
-traefik_dashboard_enabled: false
+traefik_dashboard_enabled: true
 
 # The hostname where the Traefik Dashboard will be exposed on.
 # The Dashboard will be available at https://HOSTNAME/dashboard/ (note the trailing slash).
-traefik_dashboard_hostname: ''
+traefik_dashboard_hostname: "traefik.{{ cloudflare_domain }}"
 
 # traefik_dashboard_rule controls where the Traefik Dashboard will be exposed.
 # See: traefik_dashboard_enabled, traefik_dashboard_hostname
@@ -272,8 +272,8 @@ traefik_dashboard_tls_certResolver: "{{ traefik_certResolver_primary }}" # noqa 
 # traefik_dashboard_basicauth_enabled controls if the dashboard is protected with Basic Auth.
 # When the Dashboard is enabled, we automatically enable Basic Auth.
 traefik_dashboard_basicauth_enabled: "{{ traefik_dashboard_enabled }}"
-traefik_dashboard_basicauth_user: ''
-traefik_dashboard_basicauth_password: ''
+traefik_dashboard_basicauth_user: "{{ traefik_user | default('') }}"
+traefik_dashboard_basicauth_password: "{{ traefik_pass | default('') }}"
 # Temporary file name on the host that runs Ansible
 traefik_dashboard_basicauth_file_tmp: "/tmp/ansible-htpasswd-traefik"
 
@@ -418,15 +418,15 @@ traefik_provider_configuration_extension: "{{ traefik_provider_configuration_ext
 traefik_provider_configuration: "{{ traefik_provider_configuration_yaml | from_yaml | combine(traefik_provider_configuration_extension, recursive=True) }}"
 
 # traefik_environment_variables contains a multiline string with environment variables to pass to Traefik.
-#
-# Example:
-# traefik_environment_variables: |
-#   TRAEFIK_ACCESSLOG=true
-#   TRAEFIK_API=true
-#   NETCUP_CUSTOMER_NUMBER=12345
-#   NETCUP_API_KEY=api_key
-#   NETCUP_API_PASSWORD=password
-traefik_environment_variables: ''
+traefik_environment_variables: |
+  CF_API_EMAIL={{ cloudflare_account_email }}
+  CF_DNS_API_TOKEN={{ cloudflare_api_token }}
+  CF_ZONE_API_TOKEN={{ cloudflare_zone_api_token | default('') }}
+  CLOUDFLARE_BASE_URL={{ cloudflare_base_url | default('https://api.cloudflare.com/client/v4') }}
+  CLOUDFLARE_HTTP_TIMEOUT={{ cloudflare_http_timeout | default('') }}
+  CLOUDFLARE_POLLING_INTERVAL={{ cloudflare_polling_interval | default('2') }}
+  CLOUDFLARE_PROPAGATION_TIMEOUT={{ cloudflare_propagation_timeout | default('120') }}
+  CLOUDFLARE_TTL={{ cloudflare_ttl | default('120') }}
 
 # traefik_labels_additional_labels contains a multiline string with additional labels to add to the container label file.
 # See `../templates/labels.j2` for details.
